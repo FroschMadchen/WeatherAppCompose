@@ -1,56 +1,59 @@
 package com.example.weatherappcompose.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItemDefaults.contentColor
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.weatherappcompose.R
 import com.example.weatherappcompose.ui.theme.Main
-import com.example.weatherappcompose.ui.theme.Red
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.launch
+import androidx.compose.material3.TabPosition
+import androidx.compose.material3.TabRowDefaults
+import com.google.accompanist.pager.pagerTabIndicatorOffset
 
 
 @Preview(showBackground = true)
 @Composable
-fun MainScreen() {
+fun MainCard() {
     val romulFontFamily = FontFamily(Font(R.font.sf_pro_display_light))
-    Image(
-        painter = painterResource(id = R.drawable.image_1),
-        contentDescription = "image",
-        modifier = Modifier
-            .fillMaxSize()
-            .alpha(0.8f),
-        contentScale = ContentScale.Crop
-    ) // растягивание изображения
+
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            //  .fillMaxSize()
             .padding(5.dp),
     ) {
         Card(
@@ -84,17 +87,17 @@ fun MainScreen() {
                 }
                 Text(
                     text = "Moscow",
-                    style = TextStyle(fontSize = 24.sp,fontFamily = romulFontFamily),
+                    style = TextStyle(fontSize = 24.sp, fontFamily = romulFontFamily),
                     color = Color.White
                 )
                 Text(
                     text = "4℃",
-                    style = TextStyle(fontSize = 64.sp,fontFamily = romulFontFamily),
+                    style = TextStyle(fontSize = 64.sp, fontFamily = romulFontFamily),
                     color = Color.White
                 )
                 Text(
                     text = "Sunny",
-                    style = TextStyle(fontSize = 64.sp,fontFamily = romulFontFamily),
+                    style = TextStyle(fontSize = 64.sp, fontFamily = romulFontFamily),
                     color = Color.White
                 )
                 Row(
@@ -110,9 +113,11 @@ fun MainScreen() {
                             tint = Color.White
                         )
                     }
-                    Text(text ="-13℃/4℃",
-                        style = TextStyle(fontSize = 18.sp,fontFamily = romulFontFamily),
-                        color = Color.White)
+                    Text(
+                        text = "-13℃/4℃",
+                        style = TextStyle(fontSize = 18.sp, fontFamily = romulFontFamily),
+                        color = Color.White
+                    )
 
                     IconButton(
                         onClick = { /*TODO*/ }
@@ -131,6 +136,106 @@ fun MainScreen() {
         }
     }
 }
+
+@OptIn(ExperimentalPagerApi::class)
+@Preview(showBackground = true)
+@Composable
+fun TabLayout() {
+    val tabList = listOf("HOURS", "DAYS")
+    val pagerState = rememberPagerState()
+    val tabIndex = pagerState.currentPage
+    val coroutineScope = rememberCoroutineScope()
+    Column(
+        modifier = Modifier
+            .padding(start = 3.dp, end = 5.dp)
+            .clip(RoundedCornerShape(5.dp))
+    ) {
+        TabRow(
+            selectedTabIndex = tabIndex,
+            indicator = { tabPositions ->
+                TabRowDefaults.Indicator(
+                    Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
+                    color = Color.White
+                )
+
+            },
+            contentColor = Color.White,
+            containerColor = Main
+        ) {
+            tabList.forEachIndexed { index, s ->
+                Tab(
+                    selected = false,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(index)
+                        }
+                    },
+                    text = {
+                        Text(text = s)
+                    })
+            }
+        }
+        HorizontalPager(
+            count = tabList.size,
+            state = pagerState,
+            modifier = Modifier.weight(1.0f)
+        ) {
+            index ->
+            LazyColumn( modifier = Modifier.fillMaxSize()){
+                items(15){
+                    ListItem()
+                }
+            }
+
+
+        }
+    }
+}
+
+
+
+
+@Preview(showBackground = true)
+@Composable
+fun TabLayoutV2() {
+    val state = remember { mutableStateOf(0) }
+    val titles = listOf("HOURS", "DAYS")
+    Column() {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .clip(RoundedCornerShape(5.dp))
+        ) {
+
+            TabRow(
+//            modifier = Modifier.clip(),
+                containerColor = Main,
+                selectedTabIndex = state.value,
+
+
+                ) {
+                titles.forEachIndexed { index, title ->
+                    Tab(
+                        selected = state.value == index,
+                        onClick = { state.value = index },
+                        text = { Text(text = title, maxLines = 2, overflow = TextOverflow.Ellipsis, color = Color.White ) },
+                    )
+
+                }
+            }
+            Text(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                text = "Text tab ${state.value + 1} selected",
+            )
+        }
+    }
+}
+
+
+
+
+
+
 
 
 
