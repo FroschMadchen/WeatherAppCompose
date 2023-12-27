@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -43,12 +44,14 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRowDefaults
+import androidx.compose.runtime.MutableState
+import com.example.weatherappcompose.data.WeatherModel
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 
 
-@Preview(showBackground = true)
+
 @Composable
-fun MainCard() {
+fun MainCard(currentDay:MutableState<WeatherModel>) {
     val romulFontFamily = FontFamily(Font(R.font.sf_pro_display_light))
 
     Column(
@@ -73,12 +76,12 @@ fun MainCard() {
                 ) {
                     Text(
                         modifier = Modifier.padding(top = 10.dp, start = 10.dp),
-                        text = "23 Jun 2023 13:00",
+                        text = currentDay.value.time,
                         style = TextStyle(fontSize = 15.sp, fontFamily = romulFontFamily),
                         color = Color.White
                     )
                     AsyncImage(
-                        model = "https://cdn.weatherapi.com/weather/64x64/day/122.png",
+                        model = "https:"+currentDay.value.icon,
                         contentDescription = "image2",
                         modifier = Modifier
                             .size(50.dp)
@@ -86,17 +89,17 @@ fun MainCard() {
                     )
                 }
                 Text(
-                    text = "Moscow",
+                    text = currentDay.value.city,
                     style = TextStyle(fontSize = 24.sp, fontFamily = romulFontFamily),
                     color = Color.White
                 )
                 Text(
-                    text = "4℃",
+                    text = currentDay.value.currentTemp.toFloat().toInt().toString() +"℃",
                     style = TextStyle(fontSize = 64.sp, fontFamily = romulFontFamily),
                     color = Color.White
                 )
                 Text(
-                    text = "Sunny",
+                    text = currentDay.value.condition,
                     style = TextStyle(fontSize = 64.sp, fontFamily = romulFontFamily),
                     color = Color.White
                 )
@@ -114,7 +117,7 @@ fun MainCard() {
                         )
                     }
                     Text(
-                        text = "-13℃/4℃",
+                        text =" ${currentDay.value.maxTemp}℃/${currentDay.value.minTemp}℃",
                         style = TextStyle(fontSize = 18.sp, fontFamily = romulFontFamily),
                         color = Color.White
                     )
@@ -138,9 +141,8 @@ fun MainCard() {
 }
 
 @OptIn(ExperimentalPagerApi::class)
-@Preview(showBackground = true)
 @Composable
-fun TabLayout() {
+fun TabLayout(daysList: MutableState<List<WeatherModel>>) {
     val tabList = listOf("HOURS", "DAYS")
     val pagerState = rememberPagerState()
     val tabIndex = pagerState.currentPage
@@ -179,19 +181,20 @@ fun TabLayout() {
             count = tabList.size,
             state = pagerState,
             modifier = Modifier.weight(1.0f)
-        ) {
-            index ->
-            LazyColumn( modifier = Modifier.fillMaxSize()){
-                items(15){
-                    ListItem()
+        ) { index ->
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                itemsIndexed(
+                  daysList.value
+                ) { _, item ->
+                    ListItem(item)
+
                 }
             }
-
-
         }
     }
 }
-
 
 
 
@@ -218,7 +221,14 @@ fun TabLayoutV2() {
                     Tab(
                         selected = state.value == index,
                         onClick = { state.value = index },
-                        text = { Text(text = title, maxLines = 2, overflow = TextOverflow.Ellipsis, color = Color.White ) },
+                        text = {
+                            Text(
+                                text = title,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                color = Color.White
+                            )
+                        },
                     )
 
                 }

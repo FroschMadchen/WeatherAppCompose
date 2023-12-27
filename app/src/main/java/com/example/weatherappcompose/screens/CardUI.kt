@@ -23,11 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.weatherappcompose.R
+import com.example.weatherappcompose.data.WeatherModel
 import com.example.weatherappcompose.ui.theme.Main
 
-@Preview(showBackground = true)
+
 @Composable
-fun ListItem() {
+fun ListItem(item:WeatherModel) {
     val romulFontFamily = FontFamily(Font(R.font.sf_pro_display_light))
     Card(
         modifier = Modifier
@@ -43,19 +44,19 @@ fun ListItem() {
         ) {
             Column(modifier = Modifier.padding(start = 8.dp, top = 5.dp, bottom = 5.dp)) {
                 Text(
-                    text = "12:00", color = Color.White,
+                    text = item.time, color = Color.White,
                     style = TextStyle(fontSize = 14.sp, fontFamily = romulFontFamily)
                 )
-                Text(text = "Sunny", color = Color.White,
+                Text(text = item.condition, color = Color.White,
                     style = TextStyle(fontSize = 14.sp, fontFamily = romulFontFamily))
             }
             Text(
-                text = "25℃",
+                text = item.currentTemp.ifEmpty { "${item.maxTemp} °C /${item.minTemp} °C" },
                 color = Color.White,
                 style = TextStyle(fontSize = 25.sp, fontFamily = romulFontFamily)
             )
             AsyncImage(
-                model = "https://cdn.weatherapi.com/weather/64x64/day/122.png",
+                model = "https:${item.icon}",
                 contentDescription = "image2",
                 modifier = Modifier
                     .size(30.dp)
