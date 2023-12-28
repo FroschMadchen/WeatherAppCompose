@@ -20,6 +20,7 @@ import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.weatherappcompose.data.WeatherModel
+import com.example.weatherappcompose.screens.DialogSearch
 import com.example.weatherappcompose.screens.MainCard
 
 import com.example.weatherappcompose.screens.TabLayout
@@ -29,6 +30,7 @@ import com.example.weatherappcompose.ui.theme.WeatherAppComposeTheme
 import org.json.JSONObject
 
 const val API_KEY = "d573dcacbf8f43b4a2985122232512"
+ var CITY = "Moscow"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,9 +39,13 @@ class MainActivity : ComponentActivity() {
             window.statusBarColor = getColor(R.color.ee)
 
             WeatherAppComposeTheme {
+
+
                 val  daysList = remember{
                     mutableStateOf(listOf<WeatherModel>())
                 }
+
+
                 val  currentDay = remember{
                     mutableStateOf(WeatherModel(
                         "",
@@ -52,7 +58,18 @@ class MainActivity : ComponentActivity() {
                         "",
                     ))
                 }
-                getData("Moscow", this,daysList,currentDay)
+                val  dialogState = remember{
+                    mutableStateOf(false)
+                }
+                if (dialogState.value){
+                    DialogSearch(dialogState, onSubmit ={
+
+                        getData(it, this,daysList,currentDay)
+                        CITY = it
+                    }
+                    )
+                }
+                getData(CITY, this,daysList,currentDay)
                 Image(
                     painter = painterResource(id = R.drawable.image_1),
                     contentDescription = "image",
@@ -62,8 +79,12 @@ class MainActivity : ComponentActivity() {
                     contentScale = ContentScale.Crop
                 ) // растягивание изображения
                 Column {
-                    MainCard(currentDay)
-                    TabLayout(daysList)
+                    MainCard(currentDay, onClickSync = {
+                        getData(CITY,this@MainActivity,daysList,currentDay)
+                    }, onClickSearch = {
+                            dialogState.value = true
+                    })
+                    TabLayout(daysList,currentDay)
                 }
 
             }

@@ -45,13 +45,15 @@ import kotlinx.coroutines.launch
 import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.text.style.TextAlign
 import com.example.weatherappcompose.data.WeatherModel
 import com.google.accompanist.pager.pagerTabIndicatorOffset
-
+import org.json.JSONArray
+import org.json.JSONObject
 
 
 @Composable
-fun MainCard(currentDay:MutableState<WeatherModel>) {
+fun MainCard(currentDay: MutableState<WeatherModel>,onClickSync:() -> Unit,onClickSearch:() -> Unit) {
     val romulFontFamily = FontFamily(Font(R.font.sf_pro_display_light))
 
     Column(
@@ -81,7 +83,7 @@ fun MainCard(currentDay:MutableState<WeatherModel>) {
                         color = Color.White
                     )
                     AsyncImage(
-                        model = "https:"+currentDay.value.icon,
+                        model = "https:" + currentDay.value.icon,
                         contentDescription = "image2",
                         modifier = Modifier
                             .size(50.dp)
@@ -94,13 +96,22 @@ fun MainCard(currentDay:MutableState<WeatherModel>) {
                     color = Color.White
                 )
                 Text(
-                    text = currentDay.value.currentTemp.toFloat().toInt().toString() +"℃",
-                    style = TextStyle(fontSize = 64.sp, fontFamily = romulFontFamily),
+                    text = if (currentDay.value.currentTemp.isNotEmpty())
+                        currentDay.value.currentTemp.toFloat().toInt().toString() + "℃"
+                    else "${
+                        currentDay.value.maxTemp.toFloat().toInt()
+                    }℃/ ${currentDay.value.minTemp.toFloat().toInt()}℃",
+                    style = TextStyle(fontSize = 60.sp, fontFamily = romulFontFamily),
                     color = Color.White
                 )
                 Text(
+
                     text = currentDay.value.condition,
-                    style = TextStyle(fontSize = 64.sp, fontFamily = romulFontFamily),
+                    style = TextStyle(
+                        fontSize = 54.sp,
+                        fontFamily = romulFontFamily,
+                        textAlign = TextAlign.Center
+                    ),
                     color = Color.White
                 )
                 Row(
@@ -108,7 +119,7 @@ fun MainCard(currentDay:MutableState<WeatherModel>) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(
-                        onClick = { /*TODO*/ }
+                        onClick = { onClickSearch.invoke()  }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_search_24),
@@ -117,13 +128,15 @@ fun MainCard(currentDay:MutableState<WeatherModel>) {
                         )
                     }
                     Text(
-                        text =" ${currentDay.value.maxTemp}℃/${currentDay.value.minTemp}℃",
+                        text = " ${currentDay.value.maxTemp}℃/${currentDay.value.minTemp}℃",
                         style = TextStyle(fontSize = 18.sp, fontFamily = romulFontFamily),
                         color = Color.White
                     )
 
                     IconButton(
-                        onClick = { /*TODO*/ }
+                        onClick = {
+                           onClickSync.invoke()
+                        }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.cloud_sync_icon),
@@ -142,7 +155,7 @@ fun MainCard(currentDay:MutableState<WeatherModel>) {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun TabLayout(daysList: MutableState<List<WeatherModel>>) {
+fun TabLayout(daysList: MutableState<List<WeatherModel>>, currentDays: MutableState<WeatherModel>) {
     val tabList = listOf("HOURS", "DAYS")
     val pagerState = rememberPagerState()
     val tabIndex = pagerState.currentPage
@@ -182,20 +195,38 @@ fun TabLayout(daysList: MutableState<List<WeatherModel>>) {
             state = pagerState,
             modifier = Modifier.weight(1.0f)
         ) { index ->
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                itemsIndexed(
-                  daysList.value
-                ) { _, item ->
-                    ListItem(item)
-
-                }
+            val list = when (index) {
+                0 -> getWeatherByHours(currentDays.value.hours)
+                1 -> daysList.value
+                else -> daysList.value
             }
+            MainList(list, currentDays)
         }
     }
+
 }
 
+private fun getWeatherByHours(hours: String): List<WeatherModel> {
+    if (hours.isEmpty()) return listOf()
+    val hoursArray = JSONArray(hours)
+    val list = ArrayList<WeatherModel>()
+    for (i in 0 until hoursArray.length()) {
+        val item = hoursArray[i] as JSONObject
+        list.add(
+            WeatherModel(
+                "",
+                item.getString("time"),
+                item.getString("temp_c").toFloat().toInt().toString() + "℃",
+                item.getJSONObject("condition").getString("text"),
+                item.getJSONObject("condition").getString("icon"),
+                "",
+                "",
+                ""
+            )
+        )
+    }
+    return list
+}
 
 
 @Preview(showBackground = true)
