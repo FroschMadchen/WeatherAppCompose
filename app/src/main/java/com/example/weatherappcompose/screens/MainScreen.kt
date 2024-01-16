@@ -2,8 +2,10 @@ package com.example.weatherappcompose.screens
 
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,6 +18,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItemDefaults.contentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -46,6 +49,7 @@ import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.text.style.TextAlign
+import com.example.weatherappcompose.ThemeMutable
 import com.example.weatherappcompose.data.WeatherModel
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import org.json.JSONArray
@@ -53,7 +57,13 @@ import org.json.JSONObject
 
 
 @Composable
-fun MainCard(currentDay: MutableState<WeatherModel>,onClickSync:() -> Unit,onClickSearch:() -> Unit) {
+fun MainCard(
+    currentDay: MutableState<WeatherModel>,
+    onClickSync: () -> Unit,
+    onClickSearch: () -> Unit,
+    onThemeUpdated: (Boolean) -> Unit,
+    darkTheme:Boolean
+) {
     val romulFontFamily = FontFamily(Font(R.font.sf_pro_display_light))
 
     Column(
@@ -64,7 +74,7 @@ fun MainCard(currentDay: MutableState<WeatherModel>,onClickSync:() -> Unit,onCli
         Card(
             modifier = Modifier
                 .fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Main),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
             elevation = CardDefaults.cardElevation(0.dp),
             shape = RoundedCornerShape(10.dp)
         ) {
@@ -79,21 +89,35 @@ fun MainCard(currentDay: MutableState<WeatherModel>,onClickSync:() -> Unit,onCli
                     Text(
                         modifier = Modifier.padding(top = 10.dp, start = 10.dp),
                         text = currentDay.value.time,
-                        style = TextStyle(fontSize = 15.sp, fontFamily = romulFontFamily),
-                        color = Color.White
+                        style = TextStyle(fontSize = 18.sp, fontFamily = romulFontFamily),
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
-                    AsyncImage(
+                   /* AsyncImage(
                         model = "https:" + currentDay.value.icon,
                         contentDescription = "image2",
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(70.dp)
                             .padding(top = 10.dp, end = 5.dp)
-                    )
+
+                    )*/
+                    Box(modifier = Modifier.padding(end=10.dp)
+                        ){
+                        ThemeMutable(darkTheme = darkTheme , onThemeUpdated = onThemeUpdated)
+                    }
+
                 }
+                AsyncImage(
+                    model = "https:" + currentDay.value.icon,
+                    contentDescription = "image2",
+                    modifier = Modifier
+                        .size(70.dp)
+                        .padding(top = 10.dp, end = 5.dp)
+
+                )
                 Text(
                     text = currentDay.value.city,
                     style = TextStyle(fontSize = 24.sp, fontFamily = romulFontFamily),
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
                 Text(
                     text = if (currentDay.value.currentTemp.isNotEmpty())
@@ -102,24 +126,24 @@ fun MainCard(currentDay: MutableState<WeatherModel>,onClickSync:() -> Unit,onCli
                         currentDay.value.maxTemp.toFloat().toInt()
                     }℃/ ${currentDay.value.minTemp.toFloat().toInt()}℃",
                     style = TextStyle(fontSize = 60.sp, fontFamily = romulFontFamily),
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
                 Text(
 
                     text = currentDay.value.condition,
                     style = TextStyle(
-                        fontSize = 54.sp,
+                        fontSize = 40.sp,
                         fontFamily = romulFontFamily,
                         textAlign = TextAlign.Center
                     ),
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(
-                        onClick = { onClickSearch.invoke()  }
+                        onClick = { onClickSearch.invoke() }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_search_24),
@@ -130,12 +154,12 @@ fun MainCard(currentDay: MutableState<WeatherModel>,onClickSync:() -> Unit,onCli
                     Text(
                         text = " ${currentDay.value.maxTemp}℃/${currentDay.value.minTemp}℃",
                         style = TextStyle(fontSize = 18.sp, fontFamily = romulFontFamily),
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
 
                     IconButton(
                         onClick = {
-                           onClickSync.invoke()
+                            onClickSync.invoke()
                         }
                     ) {
                         Icon(
@@ -170,12 +194,12 @@ fun TabLayout(daysList: MutableState<List<WeatherModel>>, currentDays: MutableSt
             indicator = { tabPositions ->
                 TabRowDefaults.Indicator(
                     Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
 
             },
-            contentColor = Color.White,
-            containerColor = Main
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            containerColor = MaterialTheme.colorScheme.primary
         ) {
             tabList.forEachIndexed { index, s ->
                 Tab(

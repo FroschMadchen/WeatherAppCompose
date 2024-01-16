@@ -16,15 +16,17 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = ThemeColors.Gloomy.primary,
+    surface = ThemeColors.Gloomy.surface,
+    background = ThemeColors.Gloomy.background,
+    onPrimary = ThemeColors.Gloomy.text
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = ThemeColors.Gentle.primary,
+    surface = ThemeColors.Gentle.surface,
+    background= ThemeColors.Gentle.background,
+    onPrimary = ThemeColors.Gentle.text
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -63,7 +65,7 @@ fun WeatherAppComposeTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = if(darkTheme) DarkColorScheme else LightColorScheme,
         typography = Typography,
         content = content
     )

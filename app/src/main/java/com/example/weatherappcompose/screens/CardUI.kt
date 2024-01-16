@@ -15,6 +15,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -50,7 +51,7 @@ fun ListItem(item: WeatherModel, currentDays: MutableState<WeatherModel>) {
                 if (item.hours.isEmpty()) return@clickable
                 currentDays.value = item
             },
-        colors = CardDefaults.cardColors(containerColor = Main),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
         elevation = CardDefaults.cardElevation(0.dp),
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -61,17 +62,17 @@ fun ListItem(item: WeatherModel, currentDays: MutableState<WeatherModel>) {
         ) {
             Column(modifier = Modifier.padding(start = 8.dp, top = 5.dp, bottom = 5.dp)) {
                 Text(
-                    text = item.time, color = Color.White,
+                    text = item.time, color = MaterialTheme.colorScheme.onPrimary,
                     style = TextStyle(fontSize = 14.sp, fontFamily = romulFontFamily)
                 )
                 Text(
-                    text = item.condition, color = Color.White,
+                    text = item.condition, color = MaterialTheme.colorScheme.onPrimary,
                     style = TextStyle(fontSize = 14.sp, fontFamily = romulFontFamily)
                 )
             }
             Text(
                 text = item.currentTemp.ifEmpty { "${item.maxTemp} °C /${item.minTemp} °C" },
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 style = TextStyle(fontSize = 25.sp, fontFamily = romulFontFamily)
             )
             AsyncImage(
@@ -102,9 +103,9 @@ fun MainList(list: List<WeatherModel>, currentDays: MutableState<WeatherModel>) 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DialogSearch(dialogState: MutableState<Boolean>,onSubmit:(String)-> Unit) {
+fun DialogSearch(dialogState: MutableState<Boolean>, onSubmit: (String) -> Unit) {
     val romulFontFamily = FontFamily(Font(R.font.sf_pro_display_light))
-    val dialogText = remember{
+    val dialogText = remember {
         mutableStateOf(value = "")
     }
     AlertDialog(onDismissRequest = {
@@ -113,24 +114,37 @@ fun DialogSearch(dialogState: MutableState<Boolean>,onSubmit:(String)-> Unit) {
     }, confirmButton = {
         TextButton(onClick = {
             onSubmit(dialogText.value)
-            dialogState.value = false }) {
-            Text(text = "OK",
-                style = TextStyle(fontFamily = romulFontFamily))
+            dialogState.value = false
+        }) {
+            Text(
+                text = "OK",
+                style = TextStyle(fontFamily = romulFontFamily),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
         }
 
     }, dismissButton = {
-        TextButton(onClick = { dialogState.value = false}) {
-            Text(text = "Cancel",
-                style = TextStyle(fontFamily = romulFontFamily))
+        TextButton(onClick = { dialogState.value = false }) {
+            Text(
+                text = "Cancel",
+                style = TextStyle(fontFamily = romulFontFamily),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
         }
     },
         title = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text(text = "Enter the name of the city",
-                    style = TextStyle(fontSize = 25.sp, fontFamily = romulFontFamily,textAlign = TextAlign.Center)
+                Text(
+                    text = "Enter the name of the city",
+                    style = TextStyle(
+                        fontSize = 25.sp,
+                        fontFamily = romulFontFamily,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
+                )
                 TextField(value = dialogText.value, onValueChange = {
-                        dialogText.value=it
+                    dialogText.value = it
                 })
             }
 
