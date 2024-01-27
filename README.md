@@ -11,7 +11,7 @@
 
 - Sweetheart Weather and **open source weather app for Android**.
 - It is written using **100% Kotlin and Jetpack Compose**. 
-- It was created for educational purposes and can bring you aesthetic pleasure when used. 
+- It was created for educational purposes and can bring you aesthetic pleasure when used.   
 
 
 |          |             |                |       
