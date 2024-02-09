@@ -19,5 +19,5 @@
 | ![1](https://github.com/FroschMadchen/WeatherAppCompose/blob/master/image/photo1705691557.jpeg) | ![2](https://github.com/FroschMadchen/WeatherAppCompose/blob/master/image/photo1705691571.jpeg) | ![3](https://github.com/FroschMadchen/WeatherAppCompose/blob/master/image/photo1705691588.jpeg) | ![4]()
 
 ## Widgets
-Implementation of **widgets** by using Jetpack Glance
+Implementation of **widgets** by using Jetpack Glance                                                    
 
