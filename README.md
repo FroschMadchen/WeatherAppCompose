@@ -1,4 +1,4 @@
-# $${{Sweetheart Weather: softnees}}$$ 
+# $${{Sweetheart Weather: softnees}}$$                                             
 |          |             |                |       
 | :---:    |    :----:   |          :---: | 
 | ![1](https://github.com/FroschMadchen/WeatherAppCompose/blob/master/image/photo1705428680.jpeg) | ![2](https://github.com/FroschMadchen/WeatherAppCompose/blob/master/image/photo1705428735.jpeg) | ![3](https://github.com/FroschMadchen/WeatherAppCompose/blob/master/image/photo1705428873.jpeg) | ![4]() 
